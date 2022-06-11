@@ -1,4 +1,4 @@
-package xyz.grasscutters.pltm.objects;
+package uk.haku.idlook.objects;
 
 import com.google.gson.Gson;
 

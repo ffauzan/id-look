@@ -1,13 +1,12 @@
-package xyz.grasscutters.pltm;
+package uk.haku.idlook;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.plugin.Plugin;
 import emu.grasscutter.server.event.EventHandler;
 import emu.grasscutter.server.event.HandlerPriority;
 import emu.grasscutter.server.event.player.PlayerJoinEvent;
-
-import xyz.grasscutters.pltm.commands.*;
-import xyz.grasscutters.pltm.objects.*;
+import uk.haku.idlook.commands.*;
+import uk.haku.idlook.objects.*;
 
 import java.io.*;
 import java.util.stream.Collectors;
@@ -81,7 +80,7 @@ public final class PluginTemplate extends Plugin {
                 .register();
         
         // Register commands.
-        this.getHandle().registerCommand(new ExampleCommand());
+        this.getHandle().registerCommand(new LookCommand());
 
         // Log a plugin status message.
         this.getLogger().info("The example plugin has been enabled.");

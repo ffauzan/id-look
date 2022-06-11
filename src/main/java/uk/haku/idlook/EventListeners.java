@@ -1,10 +1,10 @@
-package xyz.grasscutters.pltm;
+package uk.haku.idlook;
 
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.server.event.EventHandler;
 import emu.grasscutter.server.event.HandlerPriority;
 import emu.grasscutter.server.event.player.PlayerJoinEvent;
-import xyz.grasscutters.pltm.objects.PluginConfig;
+import uk.haku.idlook.objects.PluginConfig;
 
 /**
  * A class containing all event handlers.
