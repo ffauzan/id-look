@@ -1,7 +1,12 @@
 package uk.haku.idlook.commands;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
 import static emu.grasscutter.Configuration.*;
-import static emu.grasscutter.utils.Language.translate;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.command.Command;
@@ -10,48 +15,34 @@ import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.excels.AvatarData;
 import emu.grasscutter.data.excels.ItemData;
 import emu.grasscutter.data.excels.MonsterData;
-import emu.grasscutter.data.excels.SceneData;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.utils.Utils;
-import emu.grasscutter.utils.ConfigContainer.Game;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-
-import uk.haku.idlook.PluginTemplate;
-import uk.haku.idlook.utils.StringSimilarity;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import com.google.common.reflect.TypeToken;
+
+import uk.haku.idlook.IdLookPlugin;
+import uk.haku.idlook.utils.StringSimilarity;
+import uk.haku.idlook.objects.PluginConfig;
+import uk.haku.idlook.objects.QueryResult;
 
 
 @Command(label = "look", description = "Look command", 
-        usage = "look <keywords>", permission = "player.look")
+        usage = "look <keywords>", aliases = {"l", "gm"}, permission = "player.look", targetRequirement = Command.TargetRequirement.NONE)
 public final class LookCommand implements CommandHandler {
+    private static final PluginConfig config = IdLookPlugin.getInstance().getConfiguration();
+    private int resultLimit = config.resultLimit;
+    private int similarityScoreTreshold = config.scoreTreshold;
+
     private Map<Long, String> map;
-    Player sender;
-
-    Int2ObjectMap<AvatarData> avatarMap = GameData.getAvatarDataMap();
-    Int2ObjectMap<ItemData> itemMap = GameData.getItemDataMap();
-    Int2ObjectMap<SceneData> sceneMap = GameData.getSceneDataMap();
-    Int2ObjectMap<MonsterData> monsterMap = GameData.getMonsterDataMap();
+    private Int2ObjectMap<AvatarData> avatarMap = GameData.getAvatarDataMap();
+    private Int2ObjectMap<ItemData> itemMap = GameData.getItemDataMap();
+    private Int2ObjectMap<MonsterData> monsterMap = GameData.getMonsterDataMap();
     
-    int resultLimit = 3;
-    double similarityScoreTreshold = 0.5;
-    TreeMap<Double, Integer> avatarResult = new TreeMap<>();
-    TreeMap<Double, Integer> itemResult = new TreeMap<>();
-    TreeMap<Double, Integer> monsterResult = new TreeMap<>();
-
 
     @Override public void execute(Player sender, Player targetPlayer, List<String> args) {
-        this.sender = sender;
         String lookQuery = String.join(" ", args);
+        ArrayList<QueryResult> resultList = new ArrayList<QueryResult>();
 
         final String textMapFile = "TextMap/TextMap" + DOCUMENT_LANGUAGE + ".json";
         try (InputStreamReader fileReader = new InputStreamReader(new FileInputStream(
@@ -64,102 +55,81 @@ public final class LookCommand implements CommandHandler {
             map = new HashMap<>();
         }
         
-        lookForAvatar(lookQuery);
-        lookForItem(lookQuery);
-        lookForMonster(lookQuery);
+        lookFor(lookQuery, resultList);
 
-        
-        
+        Collections.sort(resultList);
+
+        sendResult(sender, resultList);
     }
 
-    public void lookForMonster(String query) {
+
+    public void sendResult(Player player, List<QueryResult> lookResult) {
+        if (lookResult.size() == 0) {
+            CommandHandler.sendMessage(player, "Cannot find anything, try different keyword");
+            return;
+        } else if (lookResult.size() > resultLimit) {
+            lookResult = lookResult.subList(0, resultLimit);
+        }
+
+        lookResult.forEach((data) -> {
+            String name = data.Name;
+            String itemType = data.ItemType;
+            String responseMsg = "Id: " + data.Id + " | Name: " + name + " | Type: " + itemType;
+            CommandHandler.sendMessage(player, responseMsg);
+        });
+        return;
+    }
+
+
+    public void lookFor(String query, ArrayList<QueryResult> lookResult) {
+        lookForAvatar(query, lookResult);
+        lookForItem(query, lookResult);
+        lookForMonster(query, lookResult);
+        return;
+    }
+
+
+    public void lookForMonster(String query, ArrayList<QueryResult> lookResult) {
         // Monster
-        monsterResult.clear();
         monsterMap.forEach((id, data) -> {
-            Double similarityScore = StringSimilarity.LevenshteinDistance(query, data.getMonsterName());
-
-            if (similarityScore > similarityScoreTreshold) {
-                if (monsterResult.size() < resultLimit) {
-                    monsterResult.put(similarityScore, id);
-                } else {
-                    if (monsterResult.firstKey() < similarityScore) {
-                        monsterResult.remove(monsterResult.firstKey());
-                        monsterResult.put(similarityScore, id);
-                    }
+            String name = map.get(data.getNameTextMapHash());
+            if (name != null) {
+                Double similarityScore = StringSimilarity.Fuzzy(query, name);
+                if (similarityScore > similarityScoreTreshold) {
+                    lookResult.add(new QueryResult(id, name, "Monsters", similarityScore.intValue()));
                 }
-            } 
+            }
         });
-
-        if (monsterResult.size() == 0) {
-            CommandHandler.sendMessage(sender, "Cannot find anything, try different keyword");
-        } else {
-            CommandHandler.sendMessage(sender, "Result for: " + query + " in Monster");
-            monsterResult.forEach((score, itemId) -> {
-                String itemName = monsterMap.get(itemId).getMonsterName();
-                String responseMsg = "id: " + itemId.toString() + " name: " + itemName;
-                CommandHandler.sendMessage(sender, responseMsg);
-            });
-        }
+        return;
     }
 
-    public void lookForAvatar(String query) {
-        // Avatar
-        avatarMap.clear();
+
+    public void lookForAvatar(String query, ArrayList<QueryResult> lookResult) {
+        // Avatars
         avatarMap.forEach((id, data) -> {
-            Double similarityScore = StringSimilarity.LevenshteinDistance(query, data.getName());
-
-            if (similarityScore > similarityScoreTreshold) {
-                if (avatarResult.size() < resultLimit) {
-                    avatarResult.put(similarityScore, id);
-                } else {
-                    if (avatarResult.firstKey() < similarityScore) {
-                        avatarResult.remove(avatarResult.firstKey());
-                        avatarResult.put(similarityScore, id);
-                    }
+            String name = map.get(data.getNameTextMapHash());
+            if (name != null) {
+                Double similarityScore = StringSimilarity.Fuzzy(query, name);
+                if (similarityScore > similarityScoreTreshold) {
+                    lookResult.add(new QueryResult(id, name, "Avatars", similarityScore.intValue()));
                 }
-            } 
+            }
         });
-
-        if (avatarResult.size() == 0) {
-            CommandHandler.sendMessage(sender, "Cannot find anything, try different keyword");
-        } else {
-            CommandHandler.sendMessage(sender, "Result for: " + query + " in Character");
-            avatarResult.forEach((score, itemId) -> {
-                String itemName = avatarMap.get(itemId).getName();
-                String responseMsg = "id: " + itemId.toString() + " name: " + itemName;
-                CommandHandler.sendMessage(sender, responseMsg);
-            });
-        }
+        return;
     }
 
-
-    public void lookForItem(String query) {
+    
+    public void lookForItem(String query, ArrayList<QueryResult> lookResult) {
         // Item
-        itemMap.clear();
         itemMap.forEach((id, data) -> {
-            Double similarityScore = StringSimilarity.LevenshteinDistance(query, map.get(data.getNameTextMapHash()));
-
-            if (similarityScore > similarityScoreTreshold) {
-                if (itemResult.size() < resultLimit) {
-                    itemResult.put(similarityScore, id);
-                } else {
-                    if (itemResult.firstKey() < similarityScore) {
-                        itemResult.remove(itemResult.firstKey());
-                        itemResult.put(similarityScore, id);
-                    }
+            String name = map.get(data.getNameTextMapHash());
+            if (name != null) {
+                Double similarityScore = StringSimilarity.Fuzzy(query, name);
+                if (similarityScore > similarityScoreTreshold) {
+                    lookResult.add(new QueryResult(id, name, data.getItemTypeString(), similarityScore.intValue()));
                 }
-            } 
+            }
         });
-
-        if (itemResult.size() == 0) {
-            CommandHandler.sendMessage(sender, "Cannot find anything, try different keyword");
-        } else {
-            CommandHandler.sendMessage(sender, "Result for: " + query + " in Item");
-            itemResult.forEach((score, itemId) -> {
-                String itemName = map.get(itemMap.get(itemId).getNameTextMapHash());
-                String responseMsg = "id: " + itemId.toString() + " name: " + itemName;
-                CommandHandler.sendMessage(sender, responseMsg);
-            });
-        }
+        return;
     }
 }

@@ -15,8 +15,8 @@ import java.lang.reflect.Type;
  * Use {@link Gson#fromJson(Reader, Type)} to load the values set from a reader/string into a new instance of this class.
  */
 public final class PluginConfig {
-    public boolean sendJoinMessage = true;
-    public String joinMessage = "Welcome to the server!";
+    public int scoreTreshold = 40;
+    public int resultLimit = 5;
 
     /**
      * When saved with {@link Gson#toJson(Object)}, it produces:
