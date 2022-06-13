@@ -16,7 +16,7 @@ import java.lang.reflect.Type;
  */
 public final class PluginConfig {
     public int scoreTreshold = 40;
-    public int resultLimit = 5;
+    public int resultLimit = 3;
 
     /**
      * When saved with {@link Gson#toJson(Object)}, it produces:

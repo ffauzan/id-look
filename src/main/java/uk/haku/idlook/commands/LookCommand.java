@@ -59,11 +59,11 @@ public final class LookCommand implements CommandHandler {
 
         Collections.sort(resultList);
 
-        sendResult(sender, resultList);
+        sendResult(sender, resultList, lookQuery);
     }
 
 
-    public void sendResult(Player player, List<QueryResult> lookResult) {
+    public void sendResult(Player player, List<QueryResult> lookResult, String query) {
         if (lookResult.size() == 0) {
             CommandHandler.sendMessage(player, "Cannot find anything, try different keyword");
             return;
@@ -71,6 +71,7 @@ public final class LookCommand implements CommandHandler {
             lookResult = lookResult.subList(0, resultLimit);
         }
 
+        CommandHandler.sendMessage(player, "Result for: " + query);
         lookResult.forEach((data) -> {
             String name = data.Name;
             String itemType = data.ItemType;
@@ -118,7 +119,7 @@ public final class LookCommand implements CommandHandler {
         return;
     }
 
-    
+
     public void lookForItem(String query, ArrayList<QueryResult> lookResult) {
         // Item
         itemMap.forEach((id, data) -> {
