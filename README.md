@@ -4,4 +4,4 @@ WIP.
 ### Version
 The plugin template is currently on Grasscutter version `1.2.0`.
 
-![](https://s3.oxy.my.id/public/files/idlook.gif)
+![Demo](https://s3.oxy.my.id/public/files/idlook.gif)
