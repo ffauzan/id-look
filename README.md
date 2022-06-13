@@ -1,5 +1,7 @@
-# Grasscutter Plugin Template
-This is a template repository for a Grasscutter plugin.
+# In-Game GM Handbook Plugin
+WIP.
 
 ### Version
 The plugin template is currently on Grasscutter version `1.2.0`.
+
+![](https://s3.oxy.my.id/public/files/idlook.gif)
