@@ -5,18 +5,28 @@ import com.google.gson.GsonBuilder;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.plugin.Plugin;
+import emu.grasscutter.utils.Utils;
 import uk.haku.idlook.commands.*;
-import uk.haku.idlook.objects.*;
 
-import java.io.*;
-import java.util.stream.Collectors;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.security.KeyPair;
-import java.util.Timer;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
+
+
+import java.util.*;
+
+import static emu.grasscutter.Configuration.*;
+
+
+import com.google.common.reflect.TypeToken;
+
+import uk.haku.idlook.IdLookPlugin;
+import uk.haku.idlook.objects.PluginConfig;
 
 /**
  * The Grasscutter plugin template.
@@ -37,6 +47,10 @@ public final class IdLookPlugin extends Plugin {
     
     /* The plugin's configuration instance. */
     private PluginConfig configuration;
+
+    /* Item text map */
+    private Map<Long, String> itemTextMap;
+
     
     /**
      * This method is called immediately after the plugin is first loaded into system memory.
@@ -62,6 +76,18 @@ public final class IdLookPlugin extends Plugin {
         } catch (IOException ignored) {
             this.getLogger().error("Unable to load configuration file.");
             this.configuration = new PluginConfig();
+        }
+
+        // Initialize the item text map.
+        final String textMapFile = "TextMap/TextMap" + DOCUMENT_LANGUAGE + ".json";
+        try (InputStreamReader fileReader = new InputStreamReader(new FileInputStream(
+                Utils.toFilePath(RESOURCE(textMapFile))), StandardCharsets.UTF_8)) {
+            this.itemTextMap = Grasscutter.getGsonFactory()
+                    .fromJson(fileReader, new TypeToken<Map<Long, String>>() {
+                    }.getType());
+        } catch (IOException e) {
+            Grasscutter.getLogger().warn("Resource does not exist: " + textMapFile);
+            this.itemTextMap = new HashMap<>();
         }
         
         // Log a plugin status message.
@@ -93,5 +119,12 @@ public final class IdLookPlugin extends Plugin {
      */
     public PluginConfig getConfiguration() {
         return this.configuration;
+    }
+
+    /**
+     * Gets the item text map.
+     */
+    public Map<Long, String> getItemTextMap() {
+        return this.itemTextMap;
     }
 }

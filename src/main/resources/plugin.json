@@ -1,8 +1,8 @@
 {
   "name": "IdLookPlugin",
   "description": "IdLookPlugin",
-  "version": "1.0",
-  "authors": [ "FF" ],
+  "version": "1.0.1",
+  "authors": [ "FFauzan" ],
   
   "mainClass": "uk.haku.idlook.IdLookPlugin",
   
