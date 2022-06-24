@@ -17,6 +17,5 @@
 1. > /gm {your search query}
 2. > /l {your search query}
 
-### Version
-The plugin template is currently on Grasscutter version `1.2.0` and `1.2.1-dev`.
-
+### Version Compatibility
+IdLook plugin is compatible with Grasscutter version `1.2.0` and `1.2.1-dev`.
