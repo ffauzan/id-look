@@ -18,5 +18,5 @@
 2. > /l {your search query}
 
 ### Version
-The plugin template is currently on Grasscutter version `1.2.0` and `1.2.1-dev`.
+The plugin template is currently on Grasscutter version `1.2.0` and `1.2.2-dev`.
 
