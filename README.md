@@ -19,3 +19,8 @@
 
 ### Version Compatibility
 The plugin template is currently on Grasscutter version `1.2.0` and `1.2.2-dev`.
+
+| IdLook | Grasscutter Stable | Grasscutter Development |
+|--------|--------------------|--------------------|
+| 1.0.2  |                    | 1.2.2-dev [(949916a and newer)](https://github.com/Grasscutters/Grasscutter/commit/949916ad8060afbd31507b4c5f62427fb6dd59bb)         |
+| 1.0.1  | 1.2.0              | 1.2.2-dev          |
