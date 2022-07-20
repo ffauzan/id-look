@@ -2,11 +2,12 @@ package uk.haku.idlook;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.plugin.Plugin;
 import emu.grasscutter.utils.Utils;
-import uk.haku.idlook.commands.*;
+import static emu.grasscutter.Configuration.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,15 +17,9 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Map;
-
-
 import java.util.*;
 
-import static emu.grasscutter.Configuration.*;
-
-
-import com.google.common.reflect.TypeToken;
-
+import uk.haku.idlook.commands.*;
 import uk.haku.idlook.IdLookPlugin;
 import uk.haku.idlook.objects.PluginConfig;
 
