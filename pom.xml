@@ -6,7 +6,7 @@
 
     <groupId>uk.haku</groupId> <!-- Replace with your groupId -->
     <artifactId>IdLook</artifactId> <!-- Replace with your plugin name. -->
-    <version>1.0.2</version> <!-- The template's version corresponds to the latest API version. -->
+    <version>1.0.3</version> <!-- The template's version corresponds to the latest API version. -->
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -61,7 +61,7 @@
         <dependency>
             <groupId>xyz.grasscutters</groupId> <!-- Versions below 1.0.3-dev are on 'tech.xigam' -->
             <artifactId>grasscutter</artifactId>
-            <version>1.2.2-dev</version> <!-- Replace with the latest version of the API. -->
+            <version>1.2.3-dev</version> <!-- Replace with the latest version of the API. -->
             <scope>provided</scope>
         </dependency>
         <dependency>

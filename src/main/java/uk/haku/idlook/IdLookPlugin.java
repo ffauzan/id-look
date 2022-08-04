@@ -6,8 +6,9 @@ import com.google.gson.reflect.TypeToken;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.plugin.Plugin;
+import emu.grasscutter.tools.Tools;
 import emu.grasscutter.utils.Utils;
-import static emu.grasscutter.Configuration.*;
+import static emu.grasscutter.config.Configuration.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -74,14 +75,11 @@ public final class IdLookPlugin extends Plugin {
         }
 
         // Initialize the item text map.
-        final String textMapFile = "TextMap/TextMap" + DOCUMENT_LANGUAGE + ".json";
-        try (InputStreamReader fileReader = new InputStreamReader(new FileInputStream(
-                Utils.toFilePath(RESOURCE(textMapFile))), StandardCharsets.UTF_8)) {
-            this.itemTextMap = Grasscutter.getGsonFactory()
-                    .fromJson(fileReader, new TypeToken<Map<Long, String>>() {
-                    }.getType());
+        var language = Tools.getLanguageOption();
+        try (InputStreamReader fileReader = new InputStreamReader(new FileInputStream(Utils.toFilePath(RESOURCE("TextMap/TextMap"+language+".json"))), StandardCharsets.UTF_8)) {
+            this.itemTextMap = Grasscutter.getGsonFactory().fromJson(fileReader, new TypeToken<Map<Long, String>>() {}.getType());
         } catch (IOException e) {
-            Grasscutter.getLogger().warn("Resource does not exist: " + textMapFile);
+            Grasscutter.getLogger().warn("Resource does not exist");
             this.itemTextMap = new HashMap<>();
         }
         

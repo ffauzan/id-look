@@ -13,8 +13,11 @@ import uk.haku.idlook.objects.PluginConfig;
 import uk.haku.idlook.objects.QueryResult;
 
 
-@Command(label = "look", description = "Look command", 
-        usage = "look <keywords>", aliases = {"l", "gm"}, permission = "player.look", targetRequirement = Command.TargetRequirement.NONE)
+@Command(label = "look", 
+        usage = "look <keywords>",
+        aliases = {"l", "gm"},
+        permission = "player.look",
+        targetRequirement = Command.TargetRequirement.NONE)
 public final class LookCommand implements CommandHandler {
     private static final PluginConfig config = IdLookPlugin.getInstance().getConfiguration();
     private int resultLimit = config.resultLimit;
@@ -96,7 +99,7 @@ public final class LookCommand implements CommandHandler {
             if (name != null) {
                 Double similarityScore = StringSimilarity.Fuzzy(query, name);
                 if (similarityScore > similarityScoreTreshold) {
-                    lookResult.add(new QueryResult(id, name, data.getItemTypeString(), similarityScore.intValue()));
+                    lookResult.add(new QueryResult(id, name, data.getItemType().name(), similarityScore.intValue()));
                 }
             }
         });
