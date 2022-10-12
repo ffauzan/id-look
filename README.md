@@ -21,7 +21,7 @@
  /gm {your search query}
  /l {your search query}
  ```
-### Change Handbook language
+### Changing Handbook language
 ```
 /gm setlang {language code}
 /l setlang {language code}
