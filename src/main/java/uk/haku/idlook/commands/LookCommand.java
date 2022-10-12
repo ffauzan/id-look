@@ -59,7 +59,7 @@ public final class LookCommand implements CommandHandler {
                 return;
             case "getlang":
                 if (args.size() != 1) {
-                    CommandHandler.sendMessage(sender, "/gm getlang");
+                    CommandHandler.sendMessage(sender, "Usage: /gm getlang");
                     return;
                 }
 
