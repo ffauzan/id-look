@@ -18,34 +18,102 @@ import uk.haku.idlook.objects.PluginConfig;
 import uk.haku.idlook.objects.QueryResult;
 
 @Command(label = "look", usage = "look <keywords>", aliases = { "l",
-        "gm" }, permission = "player.look", targetRequirement = Command.TargetRequirement.NONE)
+        "gm", "handbook" }, permission = "player.look", targetRequirement = Command.TargetRequirement.NONE)
 public final class LookCommand implements CommandHandler {
     private static final PluginConfig config = IdLookPlugin.getInstance().getConfiguration();
     private int resultLimit = config.resultLimit;
     private int similarityScoreTreshold = config.scoreTreshold;
-    private String targetLanguage = config.language;
+    private String targetLanguage = config.defaultLanguage;
+    private String availableLangCodeString = String.join(",", Language.TextStrings.ARR_LANGUAGES);
 
     Logger logger = IdLookPlugin.getInstance().getLogger();
 
     @Override
     public void execute(Player sender, Player targetPlayer, List<String> args) {
-        String lookQuery = String.join(" ", args);
-        ArrayList<QueryResult> resultList = new ArrayList<QueryResult>();
-        String langCode = getLanguage(sender);
+        String playerId = "";
 
-        lookFor(lookQuery, resultList, langCode);
+        if (sender != null) {
+            playerId = sender.getAccount().getId();
+        }
 
-        Collections.sort(resultList);
+        // Set player language preference
+        if (args.size() < 1) {
+            usageMessage(targetPlayer);
+            return;
+        }
 
-        sendResult(sender, resultList, lookQuery);
+        switch (args.get(0)) {
+            case "setlang":
+                if (args.size() != 2) {
+                    setLangUsageMessage(sender);
+                    return;
+                }
+
+                if (!LanguageTools.IsLanguageExist(args.get(1))) {
+                    CommandHandler.sendMessage(sender, "Available language code: " + availableLangCodeString);
+                    return;
+                }
+
+                IdLookPlugin.getInstance().addPlayerLang(playerId, args.get(1).toUpperCase());
+                CommandHandler.sendMessage(sender, "Handbook language changed to: " + args.get(1).toUpperCase());
+                return;
+            case "getlang":
+                if (args.size() != 1) {
+                    CommandHandler.sendMessage(sender, "/gm getlang");
+                    return;
+                }
+
+                String playerLang = IdLookPlugin.getInstance().getPlayerLang(playerId);
+                if (playerLang != null) {
+                    CommandHandler.sendMessage(sender, "Handbook language: " + playerLang);
+                    return;
+                } else {
+                    CommandHandler.sendMessage(sender, "No Handbook language set");
+                    setLangUsageMessage(sender);
+                    return;
+                }
+            default:
+                String lookQuery = String.join(" ", args);
+                ArrayList<QueryResult> resultList = new ArrayList<QueryResult>();
+                String langCode = getLanguage(sender);
+
+                lookFor(lookQuery, resultList, langCode);
+
+                Collections.sort(resultList);
+
+                sendResult(sender, resultList, lookQuery);
+                return;
+        }
+    }
+
+    public void setLangUsageMessage(Player player) {
+        CommandHandler.sendMessage(player, "/gm setlang {language code}");
+        CommandHandler.sendMessage(player, "Available language code: " + availableLangCodeString);
+        CommandHandler.sendMessage(player, "Example: /gm setlang EN");
+    }
+
+    public void usageMessage(Player player) {
+        CommandHandler.sendMessage(player, "Usage:\n/gm {your query}\nExample: /gm wolf grav");
+        CommandHandler.sendMessage(player,
+                "Changing language:\n/gm setlang {language code}\nAvailable language code: " + availableLangCodeString
+                        + "\nExample: /gm setlang EN");
     }
 
     public String getLanguage(Player player) {
-        // If language in plugin config sets to auto, Get player languange
+        // Executed from GC console
+        if (player == null) {
+            return Utils.getLanguageCode(Configuration.LANGUAGE);
+        }
+
+        // Get player language from language Map
+        String playerId = player.getAccount().getId();
+        String playerLang = IdLookPlugin.getInstance().getPlayerLang(playerId);
+        if (playerId != null) {
+            return playerLang;
+        }
+
+        // If language in plugin config sets to auto, Get player locale
         if (targetLanguage.equals("auto")) {
-            if (player == null) {
-                return Utils.getLanguageCode(Configuration.LANGUAGE);
-            }
             return Utils.getLanguageCode(player.getAccount().getLocale());
 
         } else if (targetLanguage.equals("server")) {
@@ -53,7 +121,7 @@ public final class LookCommand implements CommandHandler {
         } else {
             // Check if value of language in plugin config is valid
             if (LanguageTools.IsLanguageExist(targetLanguage)) {
-                return targetLanguage;
+                return targetLanguage.toUpperCase();
             }
         }
 

@@ -21,7 +21,7 @@ import java.lang.reflect.Type;
 public final class PluginConfig {
     public int scoreTreshold = 40;
     public int resultLimit = 3;
-    public String language = "EN";
+    public String defaultLanguage = "EN";
 
     /**
      * When saved with {@link Gson#toJson(Object)}, it produces:

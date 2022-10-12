@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
 
 import uk.haku.idlook.commands.*;
 import uk.haku.idlook.IdLookPlugin;
@@ -34,6 +36,9 @@ public final class IdLookPlugin extends Plugin {
 
     /* The plugin's configuration instance. */
     private PluginConfig configuration;
+
+    /* Player language preference Map */
+    private Map<String, String> playerLang;
 
     /**
      * This method is called immediately after the plugin is first loaded into
@@ -62,6 +67,9 @@ public final class IdLookPlugin extends Plugin {
             this.getLogger().error("Unable to load configuration file.");
             this.configuration = new PluginConfig();
         }
+
+        // Initiate player languange map
+        this.playerLang = new HashMap<String, String>();
 
         // Log a plugin status message.
         this.getLogger().info("The IdLook plugin has been loaded.");
@@ -96,5 +104,25 @@ public final class IdLookPlugin extends Plugin {
      */
     public PluginConfig getConfiguration() {
         return this.configuration;
+    }
+
+    /* Get player language map */
+    public Map<String, String> getPlayerLangMap() {
+        return this.playerLang;
+    }
+
+    /* Remove player language from map */
+    public void removePlayerLang(String accountId) {
+        this.playerLang.remove(accountId);
+    }
+
+    /* Add player language to map */
+    public void addPlayerLang(String accountId, String lang) {
+        this.playerLang.put(accountId, lang);
+    }
+
+    /* Get player language from map */
+    public String getPlayerLang(String accountId) {
+        return this.playerLang.get(accountId);
     }
 }
