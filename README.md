@@ -1,5 +1,8 @@
 # In-Game GM Handbook Plugin
-[PREVIEW](https://s3.oxy.my.id/public/files/idlook.gif)
+
+## Preview
+
+![](https://s3.oxy.my.id/public/files/idlook110.gif)
 
 ## 1. Installation
 1. Download IdLook-1.1.0.jar from Release.
