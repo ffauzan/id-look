@@ -39,7 +39,7 @@ EN,CHS,CHT,JP,KR,DE,ES,FR,ID,PT,RU,TH,VI
 
 | IdLook | Grasscutter Stable | Grasscutter Development |
 |--------|--------------------|--------------------|
-| 1.1.0  |                    | 1.3.2-dev          |
+| 1.1.0  |                    | 1.3.2-dev & newer  |
 | 1.0.3  |                    | 1.2.3-dev          |
 | 1.0.2  |                    | 1.2.2-dev [(949916a and newer)](https://github.com/Grasscutters/Grasscutter/commit/949916ad8060afbd31507b4c5f62427fb6dd59bb)         |
 | 1.0.1  | 1.2.0              | 1.2.2-dev          |
