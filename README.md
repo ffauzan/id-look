@@ -2,7 +2,7 @@
 
 ## Preview
 
-![](https://s3.oxy.my.id/public/files/idlook110.gif)
+![](https://s3.fimg.haku.uk/s/idlook110.gif)
 
 ## 1. Installation
 1. Download IdLook-1.1.0.jar from Release.
